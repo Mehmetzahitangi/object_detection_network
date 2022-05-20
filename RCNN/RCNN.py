@@ -6,20 +6,27 @@
 import torch
 import torch.nn as nn
 from torchvision import models
-from train import label2target
+#from train import label2target
 
+
+label2target = {'balloon':1, 'background':0}
+target2label = {t:l for l,t in label2target.items()}
+background_class = label2target['background']
+    
 class RCNN(nn.Module):
     def __init__(self):
         super().__init__()
         feature_dims = 25088
         
         vgg_backbone = models.vgg16(pretrained=True)
-        vgg_backbone.classifier = nn.Sequential()
+        vgg_backbone.classifier = nn.Sequential() 
+        #backbone'un son kısmında yer alan sınıflandırma kısmını bozarak sequential bir hale getiriyoruz.
         for param in vgg_backbone.parameters():
             param.required_grad = False
         
         self.backbone = vgg_backbone
         self.cls_score = nn.Linear(feature_dims, len(label2target))
+        # class sayımız kadar çıktı verecek bir linear layer
         self.bound_box = nn.Sequential(
             nn.Linear(feature_dims,512),
             nn.ReLU(),
