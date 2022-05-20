@@ -54,4 +54,5 @@ class RCNN(nn.Module):
             regression_loss = self.sl1(_deltas, deltas)
             return detection_loss + self.lmb * regression_loss, detection_loss.detach(), regression_loss.detach()
         else:
+            regression_loss = 0
             return detection_loss + self.lmb * regression_loss, detection_loss.detach(), regression_loss
